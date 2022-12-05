@@ -1,19 +1,35 @@
 package com.kdp.fretquiz.user;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
 
-    private final UserRepository userRepo;
+    private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepo) {
-        this.userRepo = userRepo;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public User createAnonymousUser(String sessionId) {
-        var user = new User(sessionId, User.DEFAULT_NAME);
-        userRepo.save(user);
-        return user;
+    @Transactional
+    public User createAnonUser(String sessionId) {
+        var user = User.of(sessionId);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User updateName(String sessionId, String newName) {
+        var user = userRepository
+                .findBySessionId(sessionId)
+                .orElseThrow()
+                .withName(newName);
+
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public void forgetUser(String sessionId) {
+        userRepository.deleteBySessionId(sessionId);
     }
 }

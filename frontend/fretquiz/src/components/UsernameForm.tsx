@@ -1,7 +1,7 @@
 import * as React from "react";
 import {sendUpdateUsername} from "../websocket";
 
-export function NameInput() {
+export function UsernameForm() {
   const [name, setName] = React.useState("");
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = event => {

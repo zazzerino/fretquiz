@@ -8,10 +8,16 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class UserController {
 
-    @MessageMapping("/queue/username")
-    @SendToUser("/queue/username")
-    public String updateName(@Header("simpSessionId") String sessionId, UpdateUsernameMessage message) {
-        return "name updated";
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @MessageMapping("/topic/user/name")
+    @SendToUser("/topic/user")
+    public User updateName(@Header("simpSessionId") String sessionId, UpdateUsernameMessage message) {
+        return userService.updateName(sessionId, message.username());
     }
 
     public record UpdateUsernameMessage(String username) {

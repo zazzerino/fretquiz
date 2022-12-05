@@ -6,7 +6,7 @@ const stompClient = new Client({
   brokerURL,
   onConnect: _frame => {
     console.log("connected");
-    stompClient.subscribe("/user/queue/username", onUsernameUpdate);
+    stompClient.subscribe("/user/topic/user", onUserMessage);
   },
   onDisconnect: _frame => {
     console.log("disconnected") ;
@@ -22,11 +22,11 @@ export function activateWebSocket() {
 
 export function sendUpdateUsername(username: string) {
   stompClient.publish({
-    destination: "/app/queue/username",
+    destination: "/app/topic/user/name",
     body: JSON.stringify({username}),
   });
 }
 
-function onUsernameUpdate(message: IMessage) {
-  console.log(`username message: ${message.body}`);
+function onUserMessage(message: IMessage) {
+  console.log(`user message: ${JSON.stringify(message)}`);
 }
