@@ -3,6 +3,8 @@ package com.kdp.fretquiz.user;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -31,5 +33,9 @@ public class UserService {
     @Transactional
     public void forgetUser(String sessionId) {
         userRepository.deleteBySessionId(sessionId);
+    }
+
+    public Optional<User> findUser(String sessionId) {
+        return userRepository.findBySessionId(sessionId);
     }
 }
