@@ -24,12 +24,14 @@ public record Settings(int roundCount,
                 4);
     }
 
-    public Note randomNote() {
-        var fretboard = Fretboard.of(Tuning.STANDARD_GUITAR, startFret, endFret);
+    public Fretboard fretboard() {
+        return Fretboard.of(Tuning.STANDARD_GUITAR, startFret, endFret);
+    }
 
+    public Note randomNote() {
         var notes = new ArrayList<Note>();
         for (var string : stringsToUse) {
-            notes.addAll(fretboard.notesOnString(string));
+            notes.addAll(fretboard().notesOnString(string));
         }
 
         var note = ListUtil.randomItem(notes);

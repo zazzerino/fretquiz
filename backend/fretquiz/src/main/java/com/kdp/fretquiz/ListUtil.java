@@ -46,4 +46,14 @@ public class ListUtil {
         var index = new Random().nextInt(list.size());
         return list.get(index);
     }
+
+    public static <T> T getLast(List<T> list) {
+        return list.get(list.size() - 1);
+    }
+
+    public static <T> List<T> replaceItem(List<T> list, int index, T newItem) {
+        var arrayList = new ArrayList<>(list);
+        arrayList.set(index, newItem);
+        return List.copyOf(arrayList);
+    }
 }

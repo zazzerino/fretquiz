@@ -7,4 +7,8 @@ public record Player(Long id,
     public Player(Long id, String name) {
         this(id, name, 0);
     }
+
+    public Player incrementScore() {
+        return new Player(id, name, score + 1);
+    }
 }

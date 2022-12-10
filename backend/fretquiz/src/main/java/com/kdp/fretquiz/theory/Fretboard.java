@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public record Fretboard(Tuning tuning,
@@ -76,14 +75,14 @@ public record Fretboard(Tuning tuning,
 
     public List<Note> notesOnString(int string) {
         if (string < 1 || string > stringCount() + 1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("string is not in the correct range");
         }
 
         var notes = new ArrayList<Note>();
 
         for (var fret = startFret; fret <= endFret; fret++) {
             var coord = new FretCoord(string, fret);
-            var note = findNoteAt(coord).orElseThrow(NoSuchElementException::new);
+            var note = findNoteAt(coord).orElseThrow();
             notes.add(note);
         }
 

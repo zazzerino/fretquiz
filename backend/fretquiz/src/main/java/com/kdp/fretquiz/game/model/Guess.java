@@ -4,7 +4,7 @@ import com.kdp.fretquiz.theory.FretCoord;
 import org.springframework.data.relational.core.mapping.Embedded;
 
 public record Guess(Long playerId,
-                    @Embedded.Nullable FretCoord clickedCoord,
-                    @Embedded.Nullable FretCoord correctCoord,
+                    @Embedded.Nullable(prefix = "clicked_") FretCoord clickedCoord,
+                    @Embedded.Nullable(prefix = "correct_") FretCoord correctCoord,
                     boolean isCorrect) {
 }

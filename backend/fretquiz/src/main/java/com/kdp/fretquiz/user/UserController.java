@@ -17,10 +17,10 @@ public class UserController {
     @MessageMapping("/topic/user/name")
     @SendToUser("/queue/user")
     public User updateName(@Header("simpSessionId") String sessionId,
-                           UpdateUsernameMessage message) {
+                           UsernameMessage message) {
         return userService.updateName(sessionId, message.username());
     }
 
-    public record UpdateUsernameMessage(String username) {
+    public record UsernameMessage(String username) {
     }
 }

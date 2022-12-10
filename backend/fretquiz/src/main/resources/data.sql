@@ -1,9 +1,3 @@
-DROP TABLE IF EXISTS guess;
-DROP TABLE IF EXISTS note;
-DROP TABLE IF EXISTS round;
-DROP TABLE IF EXISTS player;
-DROP TABLE IF EXISTS settings;
-DROP TABLE IF EXISTS game;
 DROP TABLE IF EXISTS "user";
 
 CREATE TABLE "user" (
@@ -12,12 +6,16 @@ CREATE TABLE "user" (
     name TEXT
 );
 
+DROP TABLE IF EXISTS game;
+
 CREATE TABLE game (
     id SERIAL PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE,
     status TEXT,
     host_id INTEGER
 );
+
+DROP TABLE IF EXISTS settings;
 
 CREATE TABLE settings (
     game INTEGER,
@@ -28,6 +26,8 @@ CREATE TABLE settings (
     end_fret INTEGER
 );
 
+DROP TABLE IF EXISTS player;
+
 CREATE TABLE player (
     id INTEGER,
     game INTEGER,
@@ -36,27 +36,27 @@ CREATE TABLE player (
     score INTEGER
 );
 
+DROP TABLE IF EXISTS round;
+
 CREATE TABLE round (
-    id SERIAL PRIMARY KEY,
     game INTEGER,
     game_key INTEGER,
-    seconds_elapsed INTEGER
+    seconds_elapsed INTEGER,
+    note_white_key TEXT,
+    note_accidental TEXT,
+    note_octave INTEGER
 );
 
-CREATE TABLE note (
-    round INTEGER,
-    white_key TEXT,
-    accidental TEXT,
-    octave INTEGER
-);
+DROP TABLE IF EXISTS guess;
 
 CREATE TABLE guess (
-    round INTEGER,
+    game INTEGER,
+    game_key INTEGER,
     round_key INTEGER,
     player_id INTEGER,
-    clicked_coord_string INTEGER,
-    clicked_coord_fret INTEGER,
-    correct_coord_string INTEGER,
-    correct_coord_fret INTEGER,
+    clicked_string INTEGER,
+    clicked_fret INTEGER,
+    correct_string INTEGER,
+    correct_fret INTEGER,
     is_correct BOOLEAN
 );

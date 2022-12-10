@@ -8,34 +8,34 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepository userRepo;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(UserRepository userRepo) {
+        this.userRepo = userRepo;
     }
 
     @Transactional
     public User createAnonUser(String sessionId) {
         var user = User.of(sessionId);
-        return userRepository.save(user);
+        return userRepo.save(user);
     }
 
     @Transactional
     public User updateName(String sessionId, String newName) {
-        var user = userRepository
+        var user = userRepo
                 .findBySessionId(sessionId)
                 .orElseThrow()
                 .withName(newName);
 
-        return userRepository.save(user);
+        return userRepo.save(user);
     }
 
     @Transactional
     public int forgetUser(String sessionId) {
-        return userRepository.deleteBySessionId(sessionId);
+        return userRepo.deleteBySessionId(sessionId);
     }
 
     public Optional<User> findUser(String sessionId) {
-        return userRepository.findBySessionId(sessionId);
+        return userRepo.findBySessionId(sessionId);
     }
 }
