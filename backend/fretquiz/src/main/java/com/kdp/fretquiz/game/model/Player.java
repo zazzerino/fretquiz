@@ -1,4 +1,4 @@
-package com.kdp.fretquiz.game;
+package com.kdp.fretquiz.game.model;
 
 public record Player(Long id,
                      String name,

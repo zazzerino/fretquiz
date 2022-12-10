@@ -19,6 +19,8 @@ export function appReducer(state: AppState, action: AppAction) {
   }
 }
 
+const initUser = {id: -1, name: "anon"};
+
 export const initState: AppState = {
-  user: {id: -1, name: "anon"},
+  user: initUser,
 }

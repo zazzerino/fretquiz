@@ -1,8 +1,16 @@
 package com.kdp.fretquiz.theory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
-public record Fretboard(Tuning tuning, int startFret, int endFret, Map<FretCoord, Note> coordNotes) {
+public record Fretboard(Tuning tuning,
+                        int startFret,
+                        int endFret,
+                        Map<FretCoord, Note> fretCoordNotes) {
 
     public Fretboard {
         if (startFret > endFret) {
@@ -10,11 +18,14 @@ public record Fretboard(Tuning tuning, int startFret, int endFret, Map<FretCoord
         }
     }
 
-    public Fretboard(Tuning tuning, int startFret, int endFret) {
-        this(tuning, startFret, endFret, calculateCoordNotes(tuning, startFret, endFret));
+    public static Fretboard of(Tuning tuning, int startFret, int endFret) {
+        var coordNotes = calculateCoordNotes(tuning, startFret, endFret);
+        return new Fretboard(tuning, startFret, endFret, coordNotes);
     }
 
-    public static Map<FretCoord, Note> calculateCoordNotes(Tuning tuning, int startFret, int endFret) {
+    public static Map<FretCoord, Note> calculateCoordNotes(Tuning tuning,
+                                                           int startFret,
+                                                           int endFret) {
         var coordNotes = new HashMap<FretCoord, Note>();
         var stringCount = tuning.notes().size();
 
@@ -35,18 +46,19 @@ public record Fretboard(Tuning tuning, int startFret, int endFret, Map<FretCoord
      * @return the Note at the given Fretboard.Coordinate
      */
     public Optional<Note> findNoteAt(FretCoord coord) {
-        return Optional.ofNullable(coordNotes.get(coord));
+        return Optional.ofNullable(fretCoordNotes.get(coord));
     }
 
     /**
      * @return the Fretboard.Coordinate where a given Note is played.
      */
     public Optional<FretCoord> findCoord(Note note) {
-        return coordNotes
+        return fretCoordNotes
                 .entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().isEnharmonicWith(note))
-                .findFirst().map(Map.Entry::getKey);
+                .findFirst()
+                .map(Map.Entry::getKey);
     }
 
     /**

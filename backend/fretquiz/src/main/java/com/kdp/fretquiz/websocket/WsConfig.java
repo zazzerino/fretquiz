@@ -3,7 +3,6 @@ package com.kdp.fretquiz.websocket;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.*;
-import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -19,8 +18,6 @@ public class WsConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("*")
-                .addInterceptors(new HttpSessionHandshakeInterceptor());
-//                .setHandshakeHandler(new WsHandshakeHandler());
+                .setAllowedOrigins("*");
     }
 }

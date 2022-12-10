@@ -12,8 +12,8 @@ public record Tuning(List<Note> notes) {
                     Note.from("A3"),
                     Note.from("E3")));
 
-    public Note getNoteAtString(int stringNum) {
+    public Note getNoteAtString(int string) {
         // Instrument strings are 1-indexed by convention, so we'll subtract 1 from the string number.
-        return notes.get(stringNum - 1);
+        return notes.get(string - 1);
     }
 }

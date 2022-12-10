@@ -38,7 +38,7 @@ public class WsEventListener {
     public void handleSessionSubscribeEvent(SessionSubscribeEvent event) {
         var sessionId = SimpAttributesContextHolder.currentAttributes().getSessionId();
         var destination = SimpMessageHeaderAccessor.wrap(event.getMessage()).getDestination();
-        logger.log(Logger.Level.INFO, "{0} subscribed to {1}", sessionId, destination);
+        logger.log(Logger.Level.INFO, "session {0} subscribed to {1}", sessionId, destination);
 
         if (Objects.equals(destination, "/user/queue/user")) {
             var user = userService.findUser(sessionId).orElseThrow();

@@ -31,8 +31,8 @@ public class UserService {
     }
 
     @Transactional
-    public void forgetUser(String sessionId) {
-        userRepository.deleteBySessionId(sessionId);
+    public int forgetUser(String sessionId) {
+        return userRepository.deleteBySessionId(sessionId);
     }
 
     public Optional<User> findUser(String sessionId) {

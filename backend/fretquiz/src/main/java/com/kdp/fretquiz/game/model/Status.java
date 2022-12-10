@@ -1,6 +1,6 @@
-package com.kdp.fretquiz.game;
+package com.kdp.fretquiz.game.model;
 
-public enum GameState {
+public enum Status {
     INIT, // the game has been created but not started
     PLAYING, // players are guessing
     ROUND_OVER, // all players have guessed

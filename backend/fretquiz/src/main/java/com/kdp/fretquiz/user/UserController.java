@@ -16,7 +16,8 @@ public class UserController {
 
     @MessageMapping("/topic/user/name")
     @SendToUser("/queue/user")
-    public User updateName(@Header("simpSessionId") String sessionId, UpdateUsernameMessage message) {
+    public User updateName(@Header("simpSessionId") String sessionId,
+                           UpdateUsernameMessage message) {
         return userService.updateName(sessionId, message.username());
     }
 
