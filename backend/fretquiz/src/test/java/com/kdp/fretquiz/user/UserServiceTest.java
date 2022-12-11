@@ -20,7 +20,7 @@ class UserServiceTest {
 
     @Test
     void createAndFindAnonUser() {
-        var user = userService.createAnonUser("sessionId");
+        var user = userService.createUser("sessionId");
         logger.log(Logger.Level.INFO, "user created: {0}", user);
         var foundUser = userRepository.findById(user.id()).orElseThrow();
         assertEquals(user, foundUser);
@@ -28,7 +28,7 @@ class UserServiceTest {
 
     @Test
     void updateName() {
-        var user = userService.createAnonUser("sessionId");
+        var user = userService.createUser("sessionId");
         assertEquals(User.DEFAULT_NAME, user.name());
 
         userService.updateName(user.sessionId(), "Alice");
@@ -38,10 +38,10 @@ class UserServiceTest {
 
     @Test
     void forgetUser() {
-        var user = userService.createAnonUser("sessionId");
+        var user = userService.createUser("sessionId");
         assertTrue(userRepository.existsById(user.id()));
 
-        userService.forgetUser(user.sessionId());
+        userService.deleteUser(user.sessionId());
         assertFalse(userRepository.existsById(user.id()));
     }
 }

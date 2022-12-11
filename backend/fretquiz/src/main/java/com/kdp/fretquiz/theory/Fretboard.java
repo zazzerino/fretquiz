@@ -44,7 +44,7 @@ public record Fretboard(Tuning tuning,
     /**
      * @return the Note at the given Fretboard.Coordinate
      */
-    public Optional<Note> findNoteAt(FretCoord coord) {
+    public Optional<Note> findNote(FretCoord coord) {
         return Optional.ofNullable(fretCoordNotes.get(coord));
     }
 
@@ -82,7 +82,7 @@ public record Fretboard(Tuning tuning,
 
         for (var fret = startFret; fret <= endFret; fret++) {
             var coord = new FretCoord(string, fret);
-            var note = findNoteAt(coord).orElseThrow();
+            var note = findNote(coord).orElseThrow();
             notes.add(note);
         }
 

@@ -1,26 +1,16 @@
-export interface User {
-  id: number;
-  name: string;
-}
-
-export interface AppState {
-  user: User;
-}
-
-export type AppAction =
-  {type: "set_user", user: User};
-
+import {AppAction, AppState} from "./types";
 
 export function appReducer(state: AppState, action: AppAction) {
   switch (action.type) {
     case "set_user": {
-      return {...state, user: action.user}
+      return {...state, user: action.user};
+    }
+    case "set_game": {
+      return {...state, game: action.game};
     }
   }
 }
 
-const initUser = {id: -1, name: "anon"};
-
 export const initState: AppState = {
-  user: initUser,
+  user: {id: -1, name: "anon"},
 }

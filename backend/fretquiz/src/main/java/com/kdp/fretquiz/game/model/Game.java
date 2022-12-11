@@ -1,5 +1,6 @@
 package com.kdp.fretquiz.game.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kdp.fretquiz.ListUtil;
 import com.kdp.fretquiz.theory.FretCoord;
 import org.springframework.data.annotation.Id;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public record Game(@Id Long id,
                    Status status,
-                   Instant createdAt,
+                   @JsonIgnore Instant createdAt,
                    Settings settings,
                    List<Round> rounds,
                    Long hostId,
@@ -31,10 +32,17 @@ public record Game(@Id Long id,
         return new Game(id, status, createdAt, settings, rounds, hostId, newPlayers);
     }
 
-    // TODO: handle the case if the host leaves
     public Game removePlayer(Long playerId) {
+        var newHostId = hostId;
+        if (playerId.equals(hostId)) {
+            var playerCount = players.size();
+            var hostIndex = ListUtil.indexOfMatchingItem(players, p -> p.id().equals(hostId)).orElseThrow();
+            var nextIndex = (hostIndex + 1) % playerCount;
+            newHostId = players.get(nextIndex).id();
+        }
+
         var newPlayers = ListUtil.removeIf(players, p -> p.id().equals(playerId));
-        return new Game(id, status, createdAt, settings, rounds, hostId, newPlayers);
+        return new Game(id, status, createdAt, settings, rounds, newHostId, newPlayers);
     }
 
     public Game handleGuess(Long playerId, FretCoord clickedCoord) {
@@ -43,7 +51,7 @@ public record Game(@Id Long id,
         var noteToGuess = round.noteToGuess();
         var fretboard = settings.fretboard();
 
-        var clickedNote = fretboard.findNoteAt(clickedCoord).orElseThrow();
+        var clickedNote = fretboard.findNote(clickedCoord).orElseThrow();
         var correctCoord = fretboard.findCoord(noteToGuess).orElseThrow();
         var isCorrect = noteToGuess.isEnharmonicWith(clickedNote);
         var guess = new Guess(playerId, clickedCoord, correctCoord, isCorrect);
@@ -52,11 +60,7 @@ public record Game(@Id Long id,
         var newRounds = ListUtil.replaceItem(rounds, roundIndex, round);
 
         var newPlayers = isCorrect
-                ? players
-                .stream()
-                .filter(p -> p.id().equals(playerId))
-                .map(Player::incrementScore)
-                .toList()
+                ? ListUtil.updateWhere(players, p -> p.id().equals(playerId), Player::incrementScore)
                 : players;
 
         return new Game(id, status, createdAt, settings, newRounds, hostId, newPlayers);

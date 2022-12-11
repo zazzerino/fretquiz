@@ -31,7 +31,7 @@ public class WsEventListener {
     public void handleSessionConnected(SessionConnectedEvent event) {
         var sessionId = SimpAttributesContextHolder.currentAttributes().getSessionId();
         logger.log(Logger.Level.INFO, "session connected: {0}", sessionId);
-        userService.createAnonUser(sessionId);
+        userService.createUser(sessionId);
     }
 
     @EventListener
@@ -58,6 +58,6 @@ public class WsEventListener {
     public void handleSessionDisconnect(SessionDisconnectEvent event) {
         var sessionId = event.getSessionId();
         logger.log(Logger.Level.INFO, "session disconnected: {0}", sessionId);
-        userService.forgetUser(sessionId);
+        userService.deleteUser(sessionId);
     }
 }

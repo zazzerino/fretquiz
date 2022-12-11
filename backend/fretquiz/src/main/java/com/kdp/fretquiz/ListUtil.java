@@ -2,7 +2,9 @@ package com.kdp.fretquiz;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ListUtil {
@@ -26,20 +28,30 @@ public class ListUtil {
     }
 
     public static <T> List<T> toggleItem(List<T> list, T item) {
-        if (list.contains(item)) {
-            return removeItem(list, item);
-        } else {
-            return addItem(list, item);
+        return list.contains(item)
+                       ? removeItem(list, item)
+                       : addItem(list, item);
+    }
+
+//    public static <T> int nextIndex(List<T> list, T item) {
+//        var index = list.indexOf(item);
+//        return (index + 1) % list.size();
+//    }
+
+    public static <T> Optional<Integer> indexOfMatchingItem(List<T> list, Predicate<T> predicate) {
+        if (list.isEmpty()) {
+            return Optional.empty();
         }
-    }
 
-    public static <T> int nextIndex(List<T> list, T item) {
-        var index = list.indexOf(item);
-        return (index + 1) % list.size();
-    }
+        for (var index = 0; index < list.size(); index++) {
+            var item = list.get(index);
 
-    public static <T> T nextItem(List<T> list, T item) {
-        return list.get(nextIndex(list, item));
+            if (predicate.test(item)) {
+                return Optional.of(index);
+            }
+        }
+
+        return Optional.empty();
     }
 
     public static <T> T randomItem(List<T> list) {
@@ -47,13 +59,18 @@ public class ListUtil {
         return list.get(index);
     }
 
-    public static <T> T getLast(List<T> list) {
-        return list.get(list.size() - 1);
-    }
-
     public static <T> List<T> replaceItem(List<T> list, int index, T newItem) {
         var arrayList = new ArrayList<>(list);
         arrayList.set(index, newItem);
         return List.copyOf(arrayList);
+    }
+
+    public static <T> List<T> updateWhere(List<T> list,
+                                          Predicate<T> predicate,
+                                          Function<T, T> update) {
+        return list
+                .stream()
+                .map(t -> predicate.test(t) ? update.apply(t) : t)
+                .toList();
     }
 }

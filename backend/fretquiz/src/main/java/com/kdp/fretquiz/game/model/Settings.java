@@ -30,6 +30,7 @@ public record Settings(int roundCount,
 
     public Note randomNote() {
         var notes = new ArrayList<Note>();
+
         for (var string : stringsToUse) {
             notes.addAll(fretboard().notesOnString(string));
         }

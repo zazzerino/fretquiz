@@ -15,6 +15,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     @Modifying
     @Query("""
-    DELETE FROM "user" WHERE "user"."session_id" = :sessionId""")
+        DELETE FROM "user" WHERE "user"."session_id" = :sessionId""")
     int deleteBySessionId(@Param("sessionId") String sessionId);
 }

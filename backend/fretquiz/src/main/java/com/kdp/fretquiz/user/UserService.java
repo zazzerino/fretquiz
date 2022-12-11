@@ -15,7 +15,7 @@ public class UserService {
     }
 
     @Transactional
-    public User createAnonUser(String sessionId) {
+    public User createUser(String sessionId) {
         var user = User.of(sessionId);
         return userRepo.save(user);
     }
@@ -31,7 +31,7 @@ public class UserService {
     }
 
     @Transactional
-    public int forgetUser(String sessionId) {
+    public int deleteUser(String sessionId) {
         return userRepo.deleteBySessionId(sessionId);
     }
 
