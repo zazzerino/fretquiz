@@ -1,6 +1,6 @@
 import {Client, IMessage} from "@stomp/stompjs";
 import * as React from "react";
-import {AppAction, User} from "./types";
+import {AppAction, Game, User} from "./types";
 
 let DISPATCH: React.Dispatch<AppAction> | null;
 
@@ -34,6 +34,8 @@ function onUserMessage(message: IMessage) {
 
 function onGameMessage(message: IMessage) {
   console.log(`game message: ${JSON.stringify(message.body)}`);
+  const game = JSON.parse(message.body) as Game;
+  DISPATCH && DISPATCH({type: "set_game", game});
 }
 
 export function sendUpdateUsername(username: string) {

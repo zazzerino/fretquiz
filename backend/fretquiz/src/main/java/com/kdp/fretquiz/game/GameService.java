@@ -9,25 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class GameService {
 
-    private final GameRepository gameRepo;
+    private final GameRepository gameRepository;
 
-    public GameService(GameRepository gameRepo) {
-        this.gameRepo = gameRepo;
+    public GameService(GameRepository gameRepository) {
+        this.gameRepository = gameRepository;
     }
 
     @Transactional
     public Game createGame(User user) {
         var player = Player.from(user);
         var game = Game.create(player);
-        return gameRepo.save(game);
+        return gameRepository.save(game);
     }
 
     @Transactional
     public Game addUserToGame(Long gameId, User user) {
         var player = Player.from(user);
-        var game = gameRepo.findById(gameId)
+        var game = gameRepository.findById(gameId)
                            .orElseThrow()
                            .addPlayer(player);
-        return gameRepo.save(game);
+        return gameRepository.save(game);
     }
 }

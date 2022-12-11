@@ -30,9 +30,10 @@ public record Settings(int roundCount,
 
     public Note randomNote() {
         var notes = new ArrayList<Note>();
+        var fretboard = fretboard();
 
         for (var string : stringsToUse) {
-            notes.addAll(fretboard().notesOnString(string));
+            notes.addAll(fretboard.notesOnString(string));
         }
 
         var note = ListUtil.randomItem(notes);

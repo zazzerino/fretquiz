@@ -1,8 +1,7 @@
 import * as React from "react";
 import {sendUpdateUsername} from "../websocket";
-import {AppAction} from "../types";
 
-export function UsernameForm(props: {dispatch: React.Dispatch<AppAction>}) {
+export function UsernameForm() {
   const [name, setName] = React.useState("");
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = event => {

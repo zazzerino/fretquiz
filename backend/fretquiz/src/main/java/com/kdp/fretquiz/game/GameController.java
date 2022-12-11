@@ -12,20 +12,20 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class GameController {
 
-    private final UserRepository userRepo;
+    private final UserRepository userRepository;
     private final GameService gameService;
 
     private final Logger logger = System.getLogger(GameController.class.getName());
 
-    public GameController(UserRepository userRepo, GameService gameService) {
-        this.userRepo = userRepo;
+    public GameController(UserRepository userRepository, GameService gameService) {
+        this.userRepository = userRepository;
         this.gameService = gameService;
     }
 
     @MessageMapping("/topic/game/create")
     @SendToUser("/queue/game")
     public Game createGame(@Header("simpSessionId") String sessionId) {
-        var user = userRepo.findBySessionId(sessionId).orElseThrow();
+        var user = userRepository.findBySessionId(sessionId).orElseThrow();
         var game = gameService.createGame(user);
         logger.log(Logger.Level.INFO, "game created: {0}", game);
         return game;
