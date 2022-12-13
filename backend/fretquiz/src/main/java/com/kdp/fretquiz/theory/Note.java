@@ -1,5 +1,7 @@
 package com.kdp.fretquiz.theory;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.regex.Pattern;
 
 public record Note(WhiteKey whiteKey,
@@ -46,6 +48,7 @@ public record Note(WhiteKey whiteKey,
         return new Note(whiteKey, accidental, octave);
     }
 
+    @JsonValue
     public String name() {
         return whiteKey.value + accidental.value + octave;
     }

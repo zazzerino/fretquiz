@@ -1,12 +1,14 @@
 package com.kdp.fretquiz.game.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kdp.fretquiz.ListUtil;
 import com.kdp.fretquiz.theory.FretCoord;
 import org.springframework.data.annotation.Id;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public record Game(@Id Long id,
                    Status status,
@@ -35,9 +37,9 @@ public record Game(@Id Long id,
     public Game removePlayer(Long playerId) {
         var newHostId = hostId;
         if (playerId.equals(hostId)) {
-            var playerCount = players.size();
-            var hostIndex = ListUtil.indexOfMatchingItem(players, p -> p.id().equals(hostId)).orElseThrow();
-            var nextIndex = (hostIndex + 1) % playerCount;
+            var hostIndex = ListUtil.indexOfMatchingItem(players, p -> p.id().equals(hostId))
+                                    .orElseThrow();
+            var nextIndex = (hostIndex + 1) % players.size();
             newHostId = players.get(nextIndex).id();
         }
 
@@ -73,5 +75,15 @@ public record Game(@Id Long id,
                 : ListUtil.addItem(rounds, round);
 
         return new Game(id, Status.PLAYING, createdAt, settings, newRounds, hostId, players);
+    }
+
+    @JsonProperty
+    public Optional<FretCoord> fretCoordToGuess() {
+        if (status != Status.PLAYING || rounds.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var round = rounds.get(rounds.size() - 1);
+        return settings.fretboard().findCoord(round.noteToGuess());
     }
 }

@@ -41,12 +41,18 @@ function onGameMessage(message: IMessage) {
 export function sendUpdateUsername(username: string) {
   stompClient.publish({
     destination: "/app/topic/user/name/update",
-    body: JSON.stringify({username}),
+    body: username,
   });
 }
 
 export function sendCreateGame() {
   stompClient.publish({
     destination: "/app/topic/game/create",
+  });
+}
+
+export function sendStartGame(gameId: number) {
+  stompClient.publish({
+    destination: `/app/topic/game/${gameId}/start`,
   });
 }

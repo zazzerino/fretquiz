@@ -46,6 +46,7 @@ export interface Game {
   rounds: Round[];
   hostId: number;
   players: Player[];
+  fretCoordToGuess: FretCoord;
 }
 
 export interface AppState {

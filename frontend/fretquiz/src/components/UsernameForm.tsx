@@ -6,11 +6,7 @@ export function UsernameForm() {
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = event => {
     event.preventDefault();
-    console.log("submitting " + name);
-
-    if (name) {
-      sendUpdateUsername(name);
-    }
+    name && sendUpdateUsername(name);
   }
 
   return (

@@ -28,7 +28,6 @@ export type OnClick = (coord: FretCoord, elem: SVGSVGElement, state: FretboardSt
  * The settings used by a fretboard diagram.
  */
 export interface Opts {
-  className: string;
   width: number;
   height: number;
   startFret: number;
@@ -71,23 +70,13 @@ export type FretboardState = Opts & FretboardData;
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 /**
- * Calculates the distance between two points. Credit to Euclid.
- */
-export function distanceBetween(pt1: Point, pt2: Point): number {
-  const x = pt2.x - pt1.x;
-  const y = pt2.y - pt1.y;
-  return Math.hypot(x, y);
-}
-
-/**
  * Create an svg element with the given width and height.
  */
-export function makeSvgElement(width: number, height: number, className?: string): SVGSVGElement {
+export function makeSvgElement(width: number, height: number): SVGSVGElement {
   const elem = document.createElementNS(SVG_NS, 'svg');
   elem.setAttribute('width', width.toString());
   elem.setAttribute('height', height.toString());
   elem.setAttribute('viewBox', `0 0 ${width} ${height}`);
-  if (className) elem.classList.add(className);
   return elem;
 }
 
@@ -142,7 +131,6 @@ export function makeText(x: number, y: number, text: string, fontSize = 16): SVG
  * Options for a 6-string guitar in standard tuning.
  */
 const DEFAULT_OPTS: Opts = {
-  className: 'fretboard-diagram',
   width: 200,
   height: 300,
   startFret: 1,
@@ -161,18 +149,19 @@ const DEFAULT_OPTS: Opts = {
  * Will return an svg element with a depiction of a fretboard described by the given userOpts.
  */
 export function makeFretboardDiagram(userOpts: Partial<Opts>, defaultOpts = DEFAULT_OPTS): SVGSVGElement {
-  const opts: Opts = {...defaultOpts, ...userOpts}; // merge default and user opts
+  const opts: Opts = {...defaultOpts, ...userOpts};
   const state: FretboardState = {...opts, ...fretboardData(opts)};
 
-  const {width, height, className, dots, label, showFretNums, onClick} = opts;
-  const elem = makeSvgElement(width, height, className);
+  const {width, height, dots, label, showFretNums, onClick, drawDotOnHover} = opts;
+  const elem = makeSvgElement(width, height);
 
-  drawStrings(elem, state);
-  drawFrets(elem, state);
+  appendStrings(elem, state);
+  appendFrets(elem, state);
 
-  if (showFretNums) drawFretNums(elem, state);
-  if (label) drawLabel(elem, state, label);
-  if (dots.length) drawDots(elem, state, dots); // won't be called if dots.length is 0
+  if (showFretNums) appendFretNums(elem, state);
+  if (label) appendLabel(elem, state, label);
+  if (dots.length) appendDots(elem, state, dots);
+  if (drawDotOnHover) addHoverListener(elem, state);
 
   if (onClick) {
     elem.onclick = (event: MouseEvent) => {
@@ -222,7 +211,7 @@ function fretboardData(opts: Opts): FretboardData {
   };
 }
 
-function drawStrings(elem: SVGElement, state: FretboardState) {
+function appendStrings(elem: SVGElement, state: FretboardState) {
   const {xMargin, yMargin, neckHeight, stringCount, stringMargin} = state;
 
   for (let i = 0; i < stringCount; i++) {
@@ -234,7 +223,7 @@ function drawStrings(elem: SVGElement, state: FretboardState) {
   }
 }
 
-function drawFrets(elem: SVGElement, state: FretboardState) {
+function appendFrets(elem: SVGElement, state: FretboardState) {
   const {width, xMargin, yMargin, fretCount, fretHeight} = state;
 
   for (let i = 0; i <= fretCount; i++) {
@@ -246,7 +235,7 @@ function drawFrets(elem: SVGElement, state: FretboardState) {
   }
 }
 
-function drawLabel(elem: SVGElement, state: FretboardState, label: string) {
+function appendLabel(elem: SVGElement, state: FretboardState, label: string) {
   const {width, yMargin} = state;
   const x = width / 2;
   const y = yMargin - (yMargin / 2);
@@ -254,7 +243,7 @@ function drawLabel(elem: SVGElement, state: FretboardState, label: string) {
   elem.appendChild(textElem);
 }
 
-function drawFretNums(elem: SVGElement, state: FretboardState) {
+function appendFretNums(elem: SVGElement, state: FretboardState) {
   const {stringCount: string, startFret, endFret, fretHeight, fretNumOffset} = state;
   const fontSize = 16; // TODO: adjust this for different diagram sizes
 
@@ -267,7 +256,7 @@ function drawFretNums(elem: SVGElement, state: FretboardState) {
   }
 }
 
-function drawDot(elem: SVGElement, state: FretboardState, dot: Dot) {
+function makeDotElem(state: FretboardState, dot: Dot): SVGCircleElement {
   const {dotColor, dotRadius} = state;
   const {x, y} = fretCoordPoint(dot, state);
 
@@ -277,11 +266,12 @@ function drawDot(elem: SVGElement, state: FretboardState, dot: Dot) {
   const cy = y + (radius / 2);
 
   const circle = makeCircle(x, cy, radius, color);
-  elem.appendChild(circle);
+  circle.setAttribute("pointer-events", "none");
+  return circle;
 }
 
-function drawDots(elem: SVGElement, state: FretboardState, dots: Dot[]) {
-  dots.forEach(dot => drawDot(elem, state, dot));
+function appendDots(elem: SVGElement, state: FretboardState, dots: Dot[]) {
+  dots.forEach(dot => elem.appendChild(makeDotElem(state, dot)));
 }
 
 /**
@@ -323,7 +313,43 @@ function closestFretCoord(elem: SVGSVGElement, state: FretboardState, event: Mou
   const x = point.x - xMargin;
   const y = point.y - yMargin + (fretHeight / 2);
 
-  const string = Math.abs(Math.round(x / stringMargin) - stringCount);
-  const fret = Math.round(y / fretHeight);
+  let string = Math.abs(Math.round(x / stringMargin) - (stringCount));
+  if (string < 1) {
+    string = 1;
+  } else if (string > state.stringCount) {
+    string = state.stringCount;
+  }
+
+  let fret = Math.round(y / fretHeight);
+  if (fret > state.endFret) {
+    fret = state.endFret;
+  }
+
   return {string, fret};
+}
+
+function fretCoordEqual(c1: FretCoord, c2: FretCoord): boolean {
+  return c1.string === c2.string && c1.fret === c2.fret;
+}
+
+function addHoverListener(elem: SVGSVGElement, state: FretboardState) {
+  let hoverDot: SVGCircleElement | null = null;
+  let prevCoord: FretCoord | null = null;
+
+  elem.onmousemove = (event: MouseEvent) => {
+    const coord = closestFretCoord(elem, state, event);
+    if (prevCoord && fretCoordEqual(coord, prevCoord)) return; // return if we're still closest to the same string/fret
+
+    prevCoord = coord;
+    const dot: Dot = {...coord, color: state.hoverDotColor};
+
+    if (hoverDot) hoverDot.remove(); // remove the previous one
+    hoverDot = makeDotElem(state, dot);
+
+    elem.appendChild(hoverDot);
+  }
+
+  elem.onmouseout = _ev => {
+    if (hoverDot) hoverDot.remove();
+  }
 }

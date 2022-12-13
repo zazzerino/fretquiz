@@ -14,13 +14,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    public record UsernameMessage(String username) {
-    }
-
     @MessageMapping("/topic/user/name/update")
     @SendToUser("/queue/user")
     public User updateName(@Header("simpSessionId") String sessionId,
-                           UsernameMessage message) {
-        return userService.updateName(sessionId, message.username());
+                           String username) {
+        return userService.updateName(sessionId, username);
     }
 }

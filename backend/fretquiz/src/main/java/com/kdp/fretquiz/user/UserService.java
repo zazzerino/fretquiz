@@ -22,10 +22,9 @@ public class UserService {
 
     @Transactional
     public User updateName(String sessionId, String newName) {
-        var user = userRepository
-                .findBySessionId(sessionId)
-                .orElseThrow()
-                .withName(newName);
+        var user = userRepository.findBySessionId(sessionId)
+                           .map(u -> u.withName(newName))
+                           .orElseThrow();
 
         return userRepository.save(user);
     }

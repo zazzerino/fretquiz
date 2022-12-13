@@ -20,7 +20,6 @@ public record Round(@Embedded.Nullable(prefix = "note_") Note noteToGuess,
     }
 
     public Round incrementSecondsElapsed() {
-        int newSecondsElapsed = secondsElapsed + 1;
-        return new Round(noteToGuess, guesses, newSecondsElapsed);
+        return new Round(noteToGuess, guesses, secondsElapsed + 1);
     }
 }
