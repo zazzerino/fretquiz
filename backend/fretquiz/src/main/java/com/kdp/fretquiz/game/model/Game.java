@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kdp.fretquiz.ListUtil;
 import com.kdp.fretquiz.theory.FretCoord;
+import com.kdp.fretquiz.theory.Note;
 import org.springframework.data.annotation.Id;
 
 import java.time.Instant;
@@ -75,6 +76,16 @@ public record Game(@Id Long id,
                 : ListUtil.addItem(rounds, round);
 
         return new Game(id, Status.PLAYING, createdAt, settings, newRounds, hostId, players);
+    }
+
+    @JsonProperty
+    public Optional<Note> noteToGuess() {
+        if (status != Status.PLAYING || rounds.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var round = rounds.get(rounds.size() - 1);
+        return Optional.of(round.noteToGuess());
     }
 
     @JsonProperty

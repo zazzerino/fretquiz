@@ -23,9 +23,12 @@ export interface Guess {
   isCorrect: boolean;
 }
 
+export type WhiteKey = "C" | "D" | "E" | "F" | "G" | "A" | "B";
+export type Accidental = "DOUBLE_SHARP" | "SHARP" | "FLAT" | "DOUBLE_FLAT";
+
 export interface Note {
-  whiteKey: string;
-  accidental: string;
+  whiteKey: WhiteKey;
+  accidental: Accidental;
   octave: number;
 }
 
@@ -46,7 +49,8 @@ export interface Game {
   rounds: Round[];
   hostId: number;
   players: Player[];
-  fretCoordToGuess: FretCoord;
+  noteToGuess?: Note;
+  fretCoordToGuess?: FretCoord;
 }
 
 export interface AppState {

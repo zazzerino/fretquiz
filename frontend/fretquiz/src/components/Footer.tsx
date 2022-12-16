@@ -2,7 +2,7 @@ import * as React from "react";
 
 export function Footer(props: {username: string}) {
   return (
-    <footer className="absolute bottom-2">
+    <footer>
       {`user: ${props.username}`}
     </footer>
   );

@@ -6,6 +6,7 @@ import {openWebSocket} from "./websocket";
 import {CreateGameButton} from "./components/CreateGameButton";
 import {Fretboard} from "./components/Fretboard";
 import {StartGameButton} from "./components/StartGameButton";
+import {Staff} from "./components/Staff";
 
 export default function App() {
   const [state, dispatch] = React.useReducer(appReducer, initState);
@@ -16,7 +17,8 @@ export default function App() {
       <h1 className="m-4 text-3xl font-bold underline">
         FretQuiz
       </h1>
-      <Fretboard id="fretboard-elem" fretCoordToGuess={state.game?.fretCoordToGuess} />
+      <Staff id="stave-elem" width={250} height={110} note={state.game?.noteToGuess} />
+      <Fretboard id="fretboard-elem" />
       <CreateGameButton />
       {state.game && <StartGameButton gameId={state.game.id} />}
       <p>{JSON.stringify(state.game)}</p>
