@@ -1,11 +1,12 @@
 package com.kdp.fretquiz.game;
 
-import com.kdp.fretquiz.game.model.Game;
-import com.kdp.fretquiz.game.model.Player;
-import com.kdp.fretquiz.game.model.Status;
+import com.kdp.fretquiz.game.model.*;
+import com.kdp.fretquiz.theory.FretCoord;
 import com.kdp.fretquiz.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 public class GameService {
@@ -44,6 +45,19 @@ public class GameService {
             return gameRepository.save(game);
         } else {
             return game;
+        }
+    }
+
+    @Transactional
+    public Optional<Game.GuessResult> handleGuess(Long gameId, Long userId, FretCoord fretCoord) {
+        var game = gameRepository.findById(gameId).orElseThrow();
+
+        if (game.status() == Status.PLAYING) {
+            var guessResult = game.handleGuess(userId, fretCoord);
+            gameRepository.save(guessResult.game());
+            return Optional.of(guessResult);
+        } else {
+            return Optional.empty();
         }
     }
 }

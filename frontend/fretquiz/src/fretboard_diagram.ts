@@ -219,6 +219,7 @@ function appendStrings(elem: SVGElement, state: FretboardState) {
     const y1 = yMargin;
     const y2 = yMargin + neckHeight;
     const line = makeLine(x, y1, x, y2);
+    line.setAttribute("pointer-events", "none");
     elem.appendChild(line);
   }
 }
@@ -231,6 +232,7 @@ function appendFrets(elem: SVGElement, state: FretboardState) {
     const x1 = xMargin;
     const x2 = width - xMargin;
     const line = makeLine(x1, y, x2, y);
+    line.setAttribute("pointer-events", "none");
     elem.appendChild(line);
   }
 }

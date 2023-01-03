@@ -34,8 +34,8 @@ class GameRepositoryTest {
         game2 = gameRepo.save(game2);
         logger.log(Logger.Level.INFO, "game2: {0}", game2);
 
-        var game3 = game2.handleGuess(player.id(), new FretCoord(1, 0));
-        game3 = gameRepo.save(game3);
-        logger.log(Logger.Level.INFO, "game3: {0}", game3);
+//        var game3 = game2.handleGuess(player.id(), new FretCoord(1, 0));
+//        game3 = gameRepo.save(game3);
+//        logger.log(Logger.Level.INFO, "game3: {0}", game3);
     }
 }

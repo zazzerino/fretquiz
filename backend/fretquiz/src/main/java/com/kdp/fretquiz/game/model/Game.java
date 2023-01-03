@@ -48,7 +48,19 @@ public record Game(@Id Long id,
         return new Game(id, status, createdAt, settings, rounds, newHostId, newPlayers);
     }
 
-    public Game handleGuess(Long playerId, FretCoord clickedCoord) {
+//    public Optional<Round> currentRound() {
+//        if (rounds.isEmpty()) {
+//            return Optional.empty();
+//        } else {
+//            var roundIndex = rounds.size() - 1;
+//            return Optional.of(rounds.get(roundIndex));
+//        }
+//    }
+
+    public record GuessResult(Game game, Guess guess) {
+    }
+
+    public GuessResult handleGuess(Long playerId, FretCoord clickedCoord) {
         var roundIndex = rounds.size() - 1;
         var round = rounds.get(roundIndex);
         var noteToGuess = round.noteToGuess();
@@ -60,13 +72,24 @@ public record Game(@Id Long id,
         var guess = new Guess(playerId, clickedCoord, correctCoord, isCorrect);
 
         round = round.addGuess(guess);
-        var newRounds = ListUtil.replaceItem(rounds, roundIndex, round);
 
+        var roundIsOver = round.guesses().size() == players.size();
+        var gameIsOver = rounds.size() == settings().roundCount();
+
+        var newStatus = status;
+        if (roundIsOver && gameIsOver) {
+            newStatus = Status.GAME_OVER;
+        } else if (roundIsOver) {
+            newStatus = Status.ROUND_OVER;
+        }
+
+        var newRounds = ListUtil.replaceItem(rounds, roundIndex, round);
         var newPlayers = isCorrect
                 ? ListUtil.updateWhere(players, p -> p.id().equals(playerId), Player::incrementScore)
                 : players;
 
-        return new Game(id, status, createdAt, settings, newRounds, hostId, newPlayers);
+        var game = new Game(id, newStatus, createdAt, settings, newRounds, hostId, newPlayers);
+        return new GuessResult(game, guess);
     }
 
     public Game startNextRound() {

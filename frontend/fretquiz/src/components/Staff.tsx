@@ -3,6 +3,8 @@ import {Vex} from "vexflow";
 import {removeChildren} from "../util";
 import {Accidental, Note} from "../types";
 
+const vf = Vex.Flow;
+
 function formatAccidental(accidental: Accidental): string {
   switch (accidental) {
     case "DOUBLE_SHARP": return "##";
@@ -22,11 +24,11 @@ export function Staff(props: {id: string; width: number; height: number; note?: 
   React.useEffect(() => {
     const div = document.getElementById(props.id)! as HTMLDivElement;
 
-    const renderer = new Vex.Flow.Renderer(div, Vex.Flow.Renderer.Backends.SVG);
+    const renderer = new vf.Renderer(div, vf.Renderer.Backends.SVG);
     renderer.resize(props.width, props.height);
     const context = renderer.getContext();
 
-    const stave = new Vex.Flow.Stave(0, 0, props.width - 1);
+    const stave = new vf.Stave(0, 0, props.width - 1);
     stave.addClef("treble")
       .setContext(context)
       .draw();
@@ -34,17 +36,17 @@ export function Staff(props: {id: string; width: number; height: number; note?: 
     if (props.note) {
       const [note, accidental] = formatNote(props.note);
 
-      const staveNote = new Vex.Flow.StaveNote({
+      const staveNote = new vf.StaveNote({
         keys: [note],
         duration: "w",
         align_center: true,
       });
 
       if (accidental) {
-        staveNote.addModifier(new Vex.Flow.Accidental(accidental));
+        staveNote.addModifier(new vf.Accidental(accidental));
       }
 
-      Vex.Flow.Formatter.FormatAndDraw(context, stave, [staveNote]);
+      vf.Formatter.FormatAndDraw(context, stave, [staveNote]);
     }
 
     return () => removeChildren(div);
@@ -52,7 +54,6 @@ export function Staff(props: {id: string; width: number; height: number; note?: 
 
   return (
     <div id={props.id}>
-      stave
     </div>
   );
 }

@@ -17,8 +17,8 @@ export default function App() {
       <h1 className="m-4 text-3xl font-bold underline">
         FretQuiz
       </h1>
-      <Staff id="stave-elem" width={250} height={110} note={state.game?.noteToGuess} />
-      <Fretboard id="fretboard-elem" />
+      <Staff id="staff-elem" width={250} height={110} note={state.game?.noteToGuess} />
+      <Fretboard elemId="fretboard-elem" drawDotOnHover={state.game?.status === "PLAYING"} />
       <CreateGameButton />
       {state.game && <StartGameButton gameId={state.game.id} />}
       <p>{JSON.stringify(state.game)}</p>

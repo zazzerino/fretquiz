@@ -1,17 +1,16 @@
 import {Client, IMessage} from "@stomp/stompjs";
 import * as React from "react";
-import {AppAction, Game, User} from "./types";
+import {AppAction, FretCoord, Game, User} from "./types";
 
 let DISPATCH: React.Dispatch<AppAction> | null;
 
-const brokerURL = "ws://localhost:8080/ws";
-
 const stompClient = new Client({
-  brokerURL,
+  brokerURL: "ws://localhost:8080/ws",
   onConnect: _frame => {
     console.log("connected");
     stompClient.subscribe("/user/queue/user", onUserMessage);
-    stompClient.subscribe("/user/queue/game", onGameMessage);
+    stompClient.subscribe("/user/queue/game/join", onGameJoinMessage);
+    stompClient.subscribe("/user/queue/game/guess", onGuessMessage);
   },
   onDisconnect: _frame => {
     console.log("disconnected") ;
@@ -32,10 +31,21 @@ function onUserMessage(message: IMessage) {
   DISPATCH && DISPATCH({type: "set_user", user});
 }
 
+function onGameJoinMessage(message: IMessage) {
+  console.log(`game join message: ${JSON.stringify(message.body)}`);
+  const game = JSON.parse(message.body) as Game;
+  stompClient.subscribe(`/topic/game/${game.id}`, onGameMessage);
+  DISPATCH && DISPATCH({type: "set_game", game});
+}
+
 function onGameMessage(message: IMessage) {
   console.log(`game message: ${JSON.stringify(message.body)}`);
   const game = JSON.parse(message.body) as Game;
   DISPATCH && DISPATCH({type: "set_game", game});
+}
+
+function onGuessMessage(message: IMessage) {
+  console.log(`guess message: ${JSON.stringify(message.body)}`);
 }
 
 export function sendUpdateUsername(username: string) {
@@ -54,5 +64,12 @@ export function sendCreateGame() {
 export function sendStartGame(gameId: number) {
   stompClient.publish({
     destination: `/app/topic/game/${gameId}/start`,
+  });
+}
+
+export function sendGuess(gameId: number, fretCoord: FretCoord) {
+  stompClient.publish({
+    destination: `/app/topic/game/${gameId}/guess`,
+    body: JSON.stringify(fretCoord),
   });
 }
