@@ -38,7 +38,7 @@ public class GameService {
     @Transactional
     public Game startGame(Long gameId, Long userId) {
         var game = gameRepository.findById(gameId).orElseThrow();
-        boolean canStartGame = game.status() == Status.INIT && game.hostId().equals(userId);
+        boolean canStartGame = game.getStatus() == Status.INIT && game.getHostId().equals(userId);
 
         if (canStartGame) {
             game.startNextRound();
@@ -58,7 +58,7 @@ public class GameService {
         var game = gameRepository.findById(gameId).orElseThrow();
         var round = game.currentRound().orElseThrow();
 
-        if (game.status() == Status.PLAYING && !round.playerHasGuessed(userId)) {
+        if (game.getStatus() == Status.PLAYING && !round.playerHasGuessed(userId)) {
             var guess = game.handleGuess(userId, fretCoord);
             game = gameRepository.save(game);
             return new GuessResult(game, true, guess);

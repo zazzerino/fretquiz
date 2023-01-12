@@ -1,9 +1,11 @@
 package kdp.fretquiz.game.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import kdp.fretquiz.theory.Accidental;
 import kdp.fretquiz.theory.Fretboard;
 import kdp.fretquiz.theory.Note;
 import kdp.fretquiz.theory.Tuning;
+import org.springframework.data.annotation.Transient;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -17,6 +19,7 @@ public class Settings {
     private final Set<Accidental> accidentalsToUse;
     private final int startFret;
     private final int endFret;
+    @JsonIgnore @Transient
     private Fretboard fretboard;
 
     public Settings(int roundCount,
@@ -32,9 +35,8 @@ public class Settings {
     }
 
     public static Settings createDefault() {
-        var startFret = 0;
-        var endFret = 4;
-        var tuning = Tuning.STANDARD_GUITAR;
+        int startFret = 0;
+        int endFret = 4;
 
         return new Settings(
                 4,
@@ -45,7 +47,7 @@ public class Settings {
     }
 
     public Note randomNote() {
-        var fretboard = fretboard();
+        var fretboard = getFretboard();
         var notes = new ArrayList<Note>();
         for (int string : stringsToUse) {
             notes.addAll(fretboard.notesOnString(string));
@@ -60,30 +62,30 @@ public class Settings {
         return note;
     }
 
-    public Fretboard fretboard() {
+    public Fretboard getFretboard() {
         if (fretboard == null) {
             fretboard = Fretboard.of(Tuning.STANDARD_GUITAR, startFret, endFret);
         }
         return fretboard;
     }
 
-    public int roundCount() {
+    public int getRoundCount() {
         return roundCount;
     }
 
-    public Set<Integer> stringsToUse() {
+    public Set<Integer> getStringsToUse() {
         return stringsToUse;
     }
 
-    public Set<Accidental> accidentalsToUse() {
+    public Set<Accidental> getAccidentalsToUse() {
         return accidentalsToUse;
     }
 
-    public int startFret() {
+    public int getStartFret() {
         return startFret;
     }
 
-    public int endFret() {
+    public int getEndFret() {
         return endFret;
     }
 

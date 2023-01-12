@@ -18,7 +18,12 @@ export default function App() {
         FretQuiz
       </h1>
       <Staff id="staff-elem" width={250} height={110} note={state.game?.noteToGuess} />
-      <Fretboard elemId="fretboard-elem" drawDotOnHover={state.game?.status === "PLAYING"} />
+      <Fretboard
+        elemId="fretboard-elem"
+        gameId={state.game?.id}
+        drawDotOnHover={state.game?.status === "PLAYING"}
+        guess={state.guess}
+      />
       <CreateGameButton />
       {state.game && <StartGameButton gameId={state.game.id} />}
       <p>{JSON.stringify(state.game)}</p>

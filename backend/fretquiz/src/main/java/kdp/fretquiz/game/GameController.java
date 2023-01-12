@@ -11,6 +11,8 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
@@ -55,20 +57,25 @@ public class GameController {
     @MessageMapping("/topic/game/{gameId}/guess")
     public void handleGuess(@Header("simpSessionId") String sessionId,
                             @DestinationVariable Long gameId,
-                            int string,
-                            int fret) {
+                            FretCoord fretCoord) {
         var userId = userRepository.findBySessionId(sessionId)
                              .map(User::id)
                              .orElseThrow();
-
-        var fretCoord = new FretCoord(string, fret);
         var guessResult = gameService.handleGuess(gameId, userId, fretCoord);
 
         if (guessResult.gameWasUpdated()) {
             var game = guessResult.game();
-            messagingTemplate.convertAndSend("/topic/game/" + game.id(), game);
+            messagingTemplate.convertAndSend("/topic/game/" + game.getId(), game);
             Objects.requireNonNull(guessResult.guess());
-            messagingTemplate.convertAndSendToUser(sessionId, "/queue/game/guess", guessResult.guess());
+
+            var headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+            headerAccessor.setSessionId(sessionId);
+            headerAccessor.setLeaveMutable(true);
+            messagingTemplate.convertAndSendToUser(
+                    sessionId,
+                    "/queue/game/guess",
+                    guessResult.guess(),
+                    headerAccessor.getMessageHeaders());
         }
     }
 }

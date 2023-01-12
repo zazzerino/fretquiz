@@ -1,6 +1,6 @@
 import {Client, IMessage} from "@stomp/stompjs";
 import * as React from "react";
-import {AppAction, FretCoord, Game, User} from "./types";
+import {AppAction, FretCoord, Game, Guess, User} from "./types";
 
 let DISPATCH: React.Dispatch<AppAction> | null;
 
@@ -46,6 +46,8 @@ function onGameMessage(message: IMessage) {
 
 function onGuessMessage(message: IMessage) {
   console.log(`guess message: ${JSON.stringify(message.body)}`);
+  const guess = JSON.parse(message.body) as Guess;
+  DISPATCH && DISPATCH({type: "set_guess", guess});
 }
 
 export function sendUpdateUsername(username: string) {

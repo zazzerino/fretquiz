@@ -8,6 +8,9 @@ export function appReducer(state: AppState, action: AppAction) {
     case "set_game": {
       return {...state, game: action.game};
     }
+    case "set_guess": {
+      return {...state, guess: action.guess};
+    }
   }
 }
 

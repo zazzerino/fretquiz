@@ -50,15 +50,16 @@ export interface Game {
   hostId: number;
   players: Player[];
   noteToGuess?: Note;
-  fretCoordToGuess?: FretCoord;
 }
 
 export interface AppState {
   user: User;
   game?: Game;
+  guess?: Guess;
 }
 
 export type AppAction =
   | {type: "set_user", user: User}
   | {type: "set_game", game: Game}
+  | {type: "set_guess", guess: Guess}
   ;

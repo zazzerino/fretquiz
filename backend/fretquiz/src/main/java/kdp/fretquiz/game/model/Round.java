@@ -39,15 +39,15 @@ public class Round {
                        .anyMatch(g -> g.playerId().equals(playerId));
     }
 
-    public Note noteToGuess() {
+    public Note getNoteToGuess() {
         return noteToGuess;
     }
 
-    public List<Guess> guesses() {
+    public List<Guess> getGuesses() {
         return guesses;
     }
 
-    public int secondsElapsed() {
+    public int getSecondsElapsed() {
         return secondsElapsed;
     }
 

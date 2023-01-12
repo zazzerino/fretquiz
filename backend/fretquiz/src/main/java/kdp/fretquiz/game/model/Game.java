@@ -8,6 +8,7 @@ import kdp.fretquiz.theory.Note;
 import org.springframework.data.annotation.Id;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,16 +37,16 @@ public class Game {
     }
 
     public static Game create(Player host) {
-        var players = new ArrayList<Player>();
+        List<Player> players = new ArrayList<>();
         players.add(host);
 
         return new Game(
                 null,
                 Status.INIT,
-                Instant.now(),
+                Instant.now().truncatedTo(ChronoUnit.MILLIS),
                 Settings.createDefault(),
                 new ArrayList<>(),
-                host.id(),
+                host.getId(),
                 players);
     }
 
@@ -55,11 +56,11 @@ public class Game {
     }
 
     public Game removePlayer(Long playerId) {
-        int playerIndex = Iterables.indexOf(players, p -> p.id().equals(playerId));
+        int playerIndex = Iterables.indexOf(players, p -> p.getId().equals(playerId));
 
         if (playerId.equals(hostId)) {
             var nextIndexWrapping = (playerIndex + 1) % players.size();
-            hostId = players.get(nextIndexWrapping).id();
+            hostId = players.get(nextIndexWrapping).getId();
         }
 
         players.remove(playerIndex);
@@ -70,13 +71,14 @@ public class Game {
         var note = settings.randomNote();
         var round = Round.of(note);
         rounds.add(round);
+        status = Status.PLAYING;
         return this;
     }
 
     public Guess handleGuess(Long playerId, FretCoord clickedCoord) {
         var round = rounds.get(rounds.size() - 1);
-        var noteToGuess = round.noteToGuess();
-        var fretboard = settings.fretboard();
+        var noteToGuess = round.getNoteToGuess();
+        var fretboard = settings.getFretboard();
         var clickedNote = fretboard.findNote(clickedCoord).orElseThrow();
         var correctCoord = fretboard.findCoord(noteToGuess).orElseThrow();
         var isCorrect = noteToGuess.isEnharmonicWith(clickedNote);
@@ -85,13 +87,13 @@ public class Game {
         round.addGuess(guess);
 
         if (isCorrect) {
-            int playerIndex = Iterables.indexOf(players, p -> p.id().equals(playerId));
+            int playerIndex = Iterables.indexOf(players, p -> p.getId().equals(playerId));
             var player = players.get(playerIndex);
             player.incrementScore();
         }
 
-        boolean roundIsOver = round.guesses().size() == players.size();
-        boolean isFinalRound = rounds.size() == settings.roundCount();
+        boolean roundIsOver = round.getGuesses().size() == players.size();
+        boolean isFinalRound = rounds.size() == settings.getRoundCount();
 
         if (roundIsOver && isFinalRound) {
             status = Status.GAME_OVER;
@@ -113,43 +115,34 @@ public class Game {
             return Optional.empty();
         }
         var round = rounds.get(rounds.size() - 1);
-        return Optional.of(round.noteToGuess());
+        return Optional.of(round.getNoteToGuess());
     }
 
-    @JsonProperty
-    public Optional<FretCoord> fretCoordToGuess() {
-        if (status != Status.PLAYING || rounds.isEmpty()) {
-            return Optional.empty();
-        }
-        var round = rounds.get(rounds.size() - 1);
-        return settings.fretboard().findCoord(round.noteToGuess());
-    }
-
-    public Long id() {
+    public Long getId() {
         return id;
     }
 
-    public Long hostId() {
+    public Long getHostId() {
         return hostId;
     }
 
-    public Status status() {
+    public Status getStatus() {
         return status;
     }
 
-    public Instant createdAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public Settings settings() {
+    public Settings getSettings() {
         return settings;
     }
 
-    public List<Round> rounds() {
+    public List<Round> getRounds() {
         return rounds;
     }
 
-    public List<Player> players() {
+    public List<Player> getPlayers() {
         return players;
     }
 

@@ -1,27 +1,32 @@
 import * as React from "react";
-import {Dot, FretboardState, makeFretboardDiagram} from "../fretboard_diagram";
+import {Dot, makeFretboardDiagram} from "../fretboard_diagram";
 import {removeChildren} from "../util";
-import {FretCoord} from "../types";
+import {Guess} from "../types";
 import {sendGuess} from "../websocket";
 
 interface FretboardProps {
   elemId: string;
+  gameId?: number;
   dots?: Dot[];
   drawDotOnHover: boolean;
-}
-
-function onClick(coord: FretCoord, _elem: SVGSVGElement, _state: FretboardState) {
-  console.log(`clicked: ${JSON.stringify(coord)}`);
-  // sendGuess()
+  guess?: Guess;
 }
 
 export function Fretboard(props: FretboardProps) {
   React.useEffect(() => {
+    const dots = props.dots || [];
+    if (props.guess) {
+      dots.push({...props.guess.correctCoord, color: "limegreen"});
+      if (!props.guess.isCorrect) {
+        dots.push({...props.guess.clickedCoord, color: "salmon"});
+      }
+    }
+
      const diagram = makeFretboardDiagram({
        drawDotOnHover: props.drawDotOnHover,
-       dots: props.dots || [],
+       dots,
        showFretNums: true,
-       onClick,
+       onClick: coord => props.gameId && sendGuess(props.gameId, coord),
      });
 
      const elem = document.getElementById(props.elemId)!;
