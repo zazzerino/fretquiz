@@ -19,9 +19,8 @@ export default function App() {
       </h1>
       <Staff id="staff-elem" width={250} height={110} note={state.game?.noteToGuess} />
       <Fretboard
-        elemId="fretboard-elem"
         gameId={state.game?.id}
-        drawDotOnHover={state.game?.status === "PLAYING"}
+        gameStatus={state.game?.status}
         guess={state.guess}
       />
       <CreateGameButton />

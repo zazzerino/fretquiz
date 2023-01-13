@@ -1,41 +1,49 @@
 import * as React from "react";
 import {Dot, makeFretboardDiagram} from "../fretboard_diagram";
-import {removeChildren} from "../util";
 import {Guess} from "../types";
 import {sendGuess} from "../websocket";
 
 interface FretboardProps {
-  elemId: string;
   gameId?: number;
+  gameStatus?: string;
   dots?: Dot[];
-  drawDotOnHover: boolean;
   guess?: Guess;
 }
 
+const width = 200;
+const height = 300;
+const correctColor = "limegreen"
+const incorrectColor = "salmon";
+
 export function Fretboard(props: FretboardProps) {
+  const ref = React.useRef<HTMLDivElement>(null);
+
   React.useEffect(() => {
     const dots = props.dots || [];
-    if (props.guess) {
-      dots.push({...props.guess.correctCoord, color: "limegreen"});
+
+    if (props.guess && (props.gameStatus === "ROUND_OVER" || props.gameStatus === "GAME_OVER")) {
+      dots.push({...props.guess.correctCoord, color: correctColor});
       if (!props.guess.isCorrect) {
-        dots.push({...props.guess.clickedCoord, color: "salmon"});
+        dots.push({...props.guess.clickedCoord, color: incorrectColor});
       }
     }
 
      const diagram = makeFretboardDiagram({
-       drawDotOnHover: props.drawDotOnHover,
+       drawDotOnHover: props.gameStatus === "PLAYING",
        dots,
        showFretNums: true,
        onClick: coord => props.gameId && sendGuess(props.gameId, coord),
+       width,
+       height,
      });
 
-     const elem = document.getElementById(props.elemId)!;
-     elem.appendChild(diagram);
-
-     return () => removeChildren(elem);
+    ref.current?.firstChild?.replaceWith(diagram);
   });
 
   return (
-    <div id={props.elemId}></div>
+    <div ref={ref}>
+      <svg width={width} height={height}>
+      </svg>
+    </div>
   );
 }

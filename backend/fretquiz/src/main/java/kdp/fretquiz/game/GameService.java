@@ -65,4 +65,14 @@ public class GameService {
         }
         return new GuessResult(game, false, null);
     }
+
+    @Transactional
+    public Game startNextRound(Long gameId, Long userId) {
+        var game = gameRepository.findById(gameId).orElseThrow();
+        if (game.getHostId().equals(userId)) {
+            game.startNextRound();
+            game = gameRepository.save(game);
+        }
+        return game;
+    }
 }

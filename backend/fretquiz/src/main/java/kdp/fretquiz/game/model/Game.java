@@ -111,11 +111,11 @@ public class Game {
 
     @JsonProperty
     public Optional<Note> noteToGuess() {
-        if (status != Status.PLAYING || rounds.isEmpty()) {
-            return Optional.empty();
+        if (status == Status.PLAYING || status == Status.ROUND_OVER || status == Status.GAME_OVER) {
+            var round = rounds.get(rounds.size() - 1);
+            return Optional.of(round.getNoteToGuess());
         }
-        var round = rounds.get(rounds.size() - 1);
-        return Optional.of(round.getNoteToGuess());
+        return Optional.empty();
     }
 
     public Long getId() {
