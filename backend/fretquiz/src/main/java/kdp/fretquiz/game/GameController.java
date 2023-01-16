@@ -78,4 +78,14 @@ public class GameController {
                     headerAccessor.getMessageHeaders());
         }
     }
+
+    @MessageMapping("/topic/game/{gameId}/round/start")
+    @SendTo("/topic/game/{gameId}")
+    public Game startNextRound(@Header("simpSessionId") String sessionId,
+                               @DestinationVariable Long gameId) {
+        var userId = userRepository.findBySessionId(sessionId)
+                             .map(User::id)
+                             .orElseThrow();
+        return gameService.startNextRound(gameId, userId);
+    }
 }

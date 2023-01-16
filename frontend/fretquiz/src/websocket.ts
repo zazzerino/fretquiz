@@ -75,3 +75,9 @@ export function sendGuess(gameId: number, fretCoord: FretCoord) {
     body: JSON.stringify(fretCoord),
   });
 }
+
+export function sendStartNextRound(gameId: number) {
+  stompClient.publish({
+    destination: `/app/topic/game/${gameId}/round/start`,
+  });
+}

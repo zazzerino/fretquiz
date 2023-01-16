@@ -109,8 +109,7 @@ public class Game {
                        : Optional.of(rounds.get(rounds.size() - 1));
     }
 
-    @JsonProperty
-    public Optional<Note> noteToGuess() {
+    public Optional<Note> getNoteToGuess() {
         if (status == Status.PLAYING || status == Status.ROUND_OVER || status == Status.GAME_OVER) {
             var round = rounds.get(rounds.size() - 1);
             return Optional.of(round.getNoteToGuess());
