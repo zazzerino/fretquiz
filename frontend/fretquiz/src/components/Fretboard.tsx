@@ -8,10 +8,9 @@ interface FretboardProps {
   drawDotOnHover: boolean;
 }
 
-const width = 200;
-const height = 300;
-
 export function Fretboard(props: FretboardProps) {
+  const width = 200;
+  const height = 300;
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {

@@ -8,6 +8,7 @@ import {Fretboard} from "./components/Fretboard";
 import {StartGameButton} from "./components/StartGameButton";
 import {Staff} from "./components/Staff";
 import {Dot} from "./fretboard_diagram";
+import {StartRoundButton} from "./components/StartRoundButton";
 
 export default function App() {
   const [state, dispatch] = React.useReducer(appReducer, initState);
@@ -40,6 +41,7 @@ export default function App() {
       />
       <CreateGameButton />
       {state.game && <StartGameButton gameId={state.game.id} />}
+      {state.game && <StartRoundButton gameId={state.game.id} />}
       <p>{JSON.stringify(state.game)}</p>
       <UsernameForm />
       <Footer username={state.user.name} />

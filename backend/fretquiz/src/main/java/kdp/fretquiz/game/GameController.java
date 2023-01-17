@@ -26,7 +26,9 @@ public class GameController {
 
     private final Logger logger = System.getLogger(GameController.class.getName());
 
-    public GameController(UserRepository userRepository, GameService gameService, SimpMessagingTemplate messagingTemplate) {
+    public GameController(UserRepository userRepository,
+                          GameService gameService,
+                          SimpMessagingTemplate messagingTemplate) {
         this.userRepository = userRepository;
         this.gameService = gameService;
         this.messagingTemplate = messagingTemplate;
